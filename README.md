@@ -11,7 +11,7 @@ Full-stack implementation of a **company data explorer** for FileSure, with:
 ## Live URLs
 
 - **Frontend (Vercel)**:  
-  https://filesure-tech-ops-assignment-git-main-ankit-dimris-projects.vercel.app/
+  https://filesure-tech-ops-assignment.vercel.app/
 
 - **Primary API (Render)**:  
   https://filesure-tech-ops-assignment-8atf.onrender.com
@@ -20,6 +20,10 @@ Example endpoints:
 
 - `GET /companies?page=1&limit=10`  
 - `GET /companies/summary`
+
+- **Video walkthrough**:
+  Here is the screen‑share walkthrough where I explain the schema, ingestion pipeline, API structure, what broke, and what I’d change with more time: 
+  VIDEO LINK: https://drive.google.com/file/d/1J-uokZQTcxVnNIDsoBYF89qfZ7VCuXHc/view?usp=sharing 
 
 ---
 
