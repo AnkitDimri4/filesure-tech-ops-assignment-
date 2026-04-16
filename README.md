@@ -187,6 +187,10 @@ Core endpoints:
 - `GET /companies/summary`
 
   Returns an array of `{ status, count }` summarizing companies by status.
+<img width="326" height="512" alt="Screenshot 2026-04-16 135049" src="https://github.com/user-attachments/assets/94538a02-574c-4ca5-8179-4f87b635859e" />
+<img width="324" height="514" alt="Screenshot 2026-04-16 135037" src="https://github.com/user-attachments/assets/f2d024a4-8b8a-4a1f-ad9e-933eb2d4b12b" />
+<img width="309" height="559" alt="Screenshot 2026-04-16 135007" src="https://github.com/user-attachments/assets/ad8fb8de-e3ba-46d5-8e6f-f97363742d17" />
+
 
 ---
 
