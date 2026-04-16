@@ -268,12 +268,20 @@ body {
   border: 1px solid var(--border-subtle);
   background: #ffffff;
   overflow: hidden;
+  width: 100%;
 }
 
 .companies-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 1200px;
   font-size: 12px;
+}
+
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .companies-table thead {
@@ -282,7 +290,8 @@ body {
 
 .companies-table th,
 .companies-table td {
-  padding: 8px 9px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
   white-space: nowrap;
@@ -304,9 +313,6 @@ body {
   background: #e5f0ff;
 }
 
-.row-fade-in {
-  /* motion handled by framer-motion */
-}
 
 .empty-row {
   text-align: center;

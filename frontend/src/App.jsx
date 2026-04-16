@@ -37,7 +37,7 @@ function App() {
         setLoading(false);
       }
     },
-    [status, stateFilter, limit]
+    [status, stateFilter, limit],
   );
 
   const fetchSummary = useCallback(async () => {
@@ -174,70 +174,72 @@ function App() {
                 <span>Loading companies…</span>
               </div>
             ) : (
-              <table className="companies-table">
-                <thead>
-                  <tr>
-                    <th>CIN</th>
-                    <th>Company</th>
-                    <th>Status</th>
-                    <th>State</th>
-                    <th>Incorporation</th>
-                    <th>Director 1</th>
-                    <th>Director 2</th>
-                    <th>Paid Up Capital</th>
-                    <th>Last Filing</th>
-                    <th>Email</th>
-                    <th>Valid Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <AnimatePresence initial={false}>
-                    {companies.map((c) => (
-                      <Motion.tr
-                        key={c._id}
-                        className="row-fade-in"
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <td>{c.cin || "—"}</td>
-                        <td>{c.company_name || "—"}</td>
-                        <td>{c.status || "—"}</td>
-                        <td>{c.state || "—"}</td>
-                        <td>{c.incorporation_date || "—"}</td>
-                        <td>{c.director_1 || "—"}</td>
-                        <td>{c.director_2 || "—"}</td>
-                        <td>
-                          {typeof c.paid_up_capital === "number"
-                            ? c.paid_up_capital.toLocaleString("en-IN")
-                            : "—"}
-                        </td>
-                        <td>{c.last_filing_date || "—"}</td>
-                        <td>{c.email || "—"}</td>
-                        <td>
-                          <span
-                            className={
-                              c.is_valid_email
-                                ? "badge badge-success"
-                                : "badge badge-danger"
-                            }
-                          >
-                            {c.is_valid_email ? "Valid" : "Invalid"}
-                          </span>
-                        </td>
-                      </Motion.tr>
-                    ))}
-                    {!companies.length && !loading && (
-                      <tr>
-                        <td colSpan={11} className="empty-row">
-                          No companies found for the selected filters.
-                        </td>
-                      </tr>
-                    )}
-                  </AnimatePresence>
-                </tbody>
-              </table>
+              <div className="table-scroll">
+                <table className="companies-table">
+                  <thead>
+                    <tr>
+                      <th>CIN</th>
+                      <th>Company</th>
+                      <th>Status</th>
+                      <th>State</th>
+                      <th>Incorporation</th>
+                      <th>Director 1</th>
+                      <th>Director 2</th>
+                      <th>Paid Up Capital</th>
+                      <th>Last Filing</th>
+                      <th>Email</th>
+                      <th>Valid Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <AnimatePresence initial={false}>
+                      {companies.map((c) => (
+                        <Motion.tr
+                          key={c._id}
+                          className="row-fade-in"
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <td>{c.cin || "—"}</td>
+                          <td>{c.company_name || "—"}</td>
+                          <td>{c.status || "—"}</td>
+                          <td>{c.state || "—"}</td>
+                          <td>{c.incorporation_date || "—"}</td>
+                          <td>{c.director_1 || "—"}</td>
+                          <td>{c.director_2 || "—"}</td>
+                          <td>
+                            {typeof c.paid_up_capital === "number"
+                              ? c.paid_up_capital.toLocaleString("en-IN")
+                              : "—"}
+                          </td>
+                          <td>{c.last_filing_date || "—"}</td>
+                          <td>{c.email || "—"}</td>
+                          <td>
+                            <span
+                              className={
+                                c.is_valid_email
+                                  ? "badge badge-success"
+                                  : "badge badge-danger"
+                              }
+                            >
+                              {c.is_valid_email ? "Valid" : "Invalid"}
+                            </span>
+                          </td>
+                        </Motion.tr>
+                      ))}
+                      {!companies.length && !loading && (
+                        <tr>
+                          <td colSpan={11} className="empty-row">
+                            No companies found for the selected filters.
+                          </td>
+                        </tr>
+                      )}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 
@@ -264,7 +266,9 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <span>Built by Ankit Dimri · FileSure Tech Ops & Support assignment</span>
+        <span>
+          Built by Ankit Dimri · FileSure Tech Ops & Support assignment
+        </span>
       </footer>
     </Motion.div>
   );
