@@ -23,6 +23,3 @@ frontend/.vite/
 Thumbs.db
 .idea/
 .vscode/
-
-# Allow example env files
-!.env.example

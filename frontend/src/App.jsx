@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-const API_BASE = "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 
 function App() {
   const [companies, setCompanies] = useState([]);
@@ -16,28 +16,31 @@ function App() {
 
   const totalPages = Math.ceil(total / limit) || 1;
 
-  const fetchCompanies = async (pageToLoad = 1) => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      params.append("page", pageToLoad);
-      params.append("limit", limit);
-      if (status) params.append("status", status);
-      if (stateFilter) params.append("state", stateFilter);
+  const fetchCompanies = useCallback(
+    async (pageToLoad = 1) => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        params.append("page", pageToLoad);
+        params.append("limit", limit);
+        if (status) params.append("status", status);
+        if (stateFilter) params.append("state", stateFilter);
 
-      const res = await fetch(`${API_BASE}/companies?` + params.toString());
-      const json = await res.json();
-      setCompanies(json.data || []);
-      setTotal(json.total || 0);
-      setPage(json.page || pageToLoad);
-    } catch (err) {
-      console.error("Error fetching companies:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const res = await fetch(`${API_BASE}/companies?` + params.toString());
+        const json = await res.json();
+        setCompanies(json.data || []);
+        setTotal(json.total || 0);
+        setPage(json.page || pageToLoad);
+      } catch (err) {
+        console.error("Error fetching companies:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [status, stateFilter, limit]
+  );
 
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/companies/summary`);
       const json = await res.json();
@@ -45,12 +48,12 @@ function App() {
     } catch (err) {
       console.error("Error fetching summary:", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCompanies(1);
     fetchSummary();
-  }, []);
+  }, [fetchCompanies, fetchSummary]);
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();
@@ -66,7 +69,12 @@ function App() {
   };
 
   return (
-    <div className="app-root light">
+    <Motion.div
+      className="app-root light"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
       <header className="app-header">
         <div className="app-title-block">
           <h1 className="app-title">FileSure Company Explorer</h1>
@@ -77,7 +85,7 @@ function App() {
       </header>
 
       <main className="app-main">
-        <motion.section
+        <Motion.section
           className="filters-card"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -127,7 +135,7 @@ function App() {
           <div className="summary-chip-row">
             <AnimatePresence>
               {summary.map((s) => (
-                <motion.div
+                <Motion.div
                   key={s.status}
                   className="summary-chip"
                   initial={{ opacity: 0, y: 6 }}
@@ -139,13 +147,13 @@ function App() {
                     {s.status || "Unknown"}
                   </span>
                   <span className="summary-chip-count">{s.count}</span>
-                </motion.div>
+                </Motion.div>
               ))}
             </AnimatePresence>
           </div>
-        </motion.section>
+        </Motion.section>
 
-        <motion.section
+        <Motion.section
           className="table-card"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,7 +193,7 @@ function App() {
                 <tbody>
                   <AnimatePresence initial={false}>
                     {companies.map((c) => (
-                      <motion.tr
+                      <Motion.tr
                         key={c._id}
                         className="row-fade-in"
                         initial={{ opacity: 0, y: 4 }}
@@ -218,7 +226,7 @@ function App() {
                             {c.is_valid_email ? "Valid" : "Invalid"}
                           </span>
                         </td>
-                      </motion.tr>
+                      </Motion.tr>
                     ))}
                     {!companies.length && !loading && (
                       <tr>
@@ -252,13 +260,13 @@ function App() {
               Next →
             </button>
           </div>
-        </motion.section>
+        </Motion.section>
       </main>
 
       <footer className="app-footer">
         <span>Built by Ankit Dimri · FileSure Tech Ops & Support assignment</span>
       </footer>
-    </div>
+    </Motion.div>
   );
 }
 

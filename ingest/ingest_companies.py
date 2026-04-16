@@ -13,6 +13,8 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MONGO_DB = os.getenv("MONGO_DB", "filesure_assignment")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "companies")
 
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
 
 def normalize_status(raw):
     if not isinstance(raw, str):
@@ -51,7 +53,6 @@ def parse_date(raw):
     if not raw:
         return None
 
-    # Try multiple formats
     formats = ["%d-%m-%Y", "%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%d"]
     for fmt in formats:
         try:
@@ -59,7 +60,6 @@ def parse_date(raw):
             return dt.strftime("%Y-%m-%d")
         except ValueError:
             continue
-    # If it fails, return None (or keep raw if you prefer)
     return None
 
 
@@ -68,7 +68,7 @@ def clean_paid_up_capital(raw):
         return None
     if not isinstance(raw, str):
         raw = str(raw)
-    # Remove currency symbols and commas and spaces
+
     cleaned = raw.replace("₹", "").replace("Rs.", "").replace("Rs", "")
     cleaned = cleaned.replace(",", "").replace(" ", "")
     cleaned = cleaned.replace("..", "").strip()
@@ -79,9 +79,6 @@ def clean_paid_up_capital(raw):
         return int(cleaned)
     except ValueError:
         return None
-
-
-EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def validate_email(raw):
@@ -121,7 +118,7 @@ def transform_row(row):
         "email": email,
         "is_valid_email": is_valid_email,
         "_metadata": {
-            "source": "sample_csv",
+            "source": "company_records.csv",
         },
     }
 
@@ -130,14 +127,30 @@ def transform_row(row):
 
 def main():
     csv_path = os.path.join(os.path.dirname(__file__), "company_records.csv")
-    print(f"Reading CSV from {csv_path}")
+    print(f"[INFO] Reading CSV from {csv_path}")
 
-    df = pd.read_csv(csv_path)
+    try:
+        df = pd.read_csv(csv_path)
+    except Exception as e:
+        print("[ERROR] Failed to read CSV:", e)
+        return
 
     # Connect to MongoDB
-    client = MongoClient(MONGO_URI)
-    db = client[MONGO_DB]
-    collection = db[MONGO_COLLECTION]
+    try:
+        client = MongoClient(MONGO_URI)
+        db = client[MONGO_DB]
+        collection = db[MONGO_COLLECTION]
+        print("[INFO] Connected to MongoDB")
+    except Exception as e:
+        print("[ERROR] MongoDB connection failed:", e)
+        return
+
+    # Optional: clear old data for repeatable runs
+    try:
+        collection.delete_many({})
+        print("[INFO] Cleared existing documents in collection.")
+    except Exception as e:
+        print("[WARN] Could not clear collection:", e)
 
     docs = []
     for _, row in df.iterrows():
@@ -145,21 +158,21 @@ def main():
             doc = transform_row(row)
             docs.append(doc)
         except Exception as e:
-            print("Error processing row:", row.to_dict(), e)
+            print("[WARN] Error processing row:", row.to_dict(), e)
 
     if docs:
         try:
             result = collection.insert_many(docs)
-            print(f"Inserted {len(result.inserted_ids)} documents.")
+            print(f"[INFO] Inserted {len(result.inserted_ids)} documents.")
         except Exception as e:
-            print("Error inserting documents into MongoDB:", e)
+            print("[ERROR] Error inserting documents into MongoDB:", e)
 
     # Create index for API queries
     try:
         collection.create_index([("status", ASCENDING), ("state", ASCENDING)])
-        print("Created index on status + state.")
+        print("[INFO] Created index on status + state.")
     except Exception as e:
-        print("Error creating index:", e)
+        print("[WARN] Error creating index:", e)
 
 
 if __name__ == "__main__":
