@@ -1,0 +1,28 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Vite
+frontend/dist/
+frontend/.vite/
+
+# Env
+.env
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Allow example env files
+!.env.example
